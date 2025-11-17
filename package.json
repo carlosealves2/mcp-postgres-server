@@ -1,0 +1,63 @@
+{
+  "name": "mcp-postgres-server",
+  "version": "1.0.0",
+  "description": "MCP server for read-only PostgreSQL database access",
+  "author": "carlos.e.alves2@proton.me",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlosealves2/mcp-postgres-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/carlosealves2/mcp-postgres-server/issues"
+  },
+  "homepage": "https://github.com/carlosealves2/mcp-postgres-server#readme",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "postgresql",
+    "database",
+    "claude",
+    "ai",
+    "llm"
+  ],
+  "module": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "mcp-postgres-server": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "bun index.ts",
+    "dev": "bun --hot index.ts",
+    "build": "bun build index.ts --compile --outfile mcp-database-client",
+    "build:npm": "bun build index.ts --outdir dist --target node --format esm && cp -r src dist/",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "prepublishOnly": "bun run build:npm",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/ssh2": "^1.15.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "@toon-format/toon": "^1.0.0",
+    "postgres": "^3.4.7",
+    "ssh2": "^1.17.0",
+    "yaml": "^2.8.1"
+  }
+}
