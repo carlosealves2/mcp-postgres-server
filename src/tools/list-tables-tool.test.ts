@@ -24,8 +24,9 @@ describe('List Tables Tool', () => {
     test('should have optional schema parameter', () => {
       expect(LIST_TABLES_TOOL_DEFINITION.inputSchema.properties.schema).toBeDefined();
       expect(LIST_TABLES_TOOL_DEFINITION.inputSchema.properties.schema.type).toBe('string');
-      // Schema should be optional
-      expect(LIST_TABLES_TOOL_DEFINITION.inputSchema.required || []).not.toContain('schema');
+      // Schema should be optional (no required field means all properties are optional)
+      const schema = LIST_TABLES_TOOL_DEFINITION.inputSchema as { required?: string[] };
+      expect(schema.required || []).not.toContain('schema');
     });
   });
 

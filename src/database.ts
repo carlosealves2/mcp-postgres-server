@@ -7,7 +7,7 @@ import postgres from 'postgres';
 import { loadDatabaseConfig, getConnectionUrl } from './config';
 import { QUERY_LIMITS } from './security';
 import { logger } from './logger';
-import { initializeSSHTunnelIfNeeded, SSHTunnel } from './ssh-tunnel';
+import { initializeSSHTunnelIfNeeded, type SSHTunnel } from './ssh-tunnel';
 
 let connectionPool: ReturnType<typeof postgres> | null = null;
 let isInitialized = false;

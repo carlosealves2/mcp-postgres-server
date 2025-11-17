@@ -71,7 +71,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'query': {
-        const input = args as QueryToolInput;
+        const input = args as unknown as QueryToolInput;
         const result = await handleQueryTool(input);
 
         if (!result.success) {
@@ -118,7 +118,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'describe_table': {
-        const input = args as DescribeTableToolInput;
+        const input = args as unknown as DescribeTableToolInput;
         const result = await handleDescribeTableTool(input);
 
         if (!result.success) {

@@ -50,10 +50,10 @@ function toTEXT(data: any, indent: number = 0): string {
       }
 
       // Build table
-      const header = keys.map(k => k.padEnd(widths[k])).join(' | ');
-      const separator = keys.map(k => '-'.repeat(widths[k])).join('-+-');
+      const header = keys.map(k => k.padEnd(widths[k] || 0)).join(' | ');
+      const separator = keys.map(k => '-'.repeat(widths[k] || 0)).join('-+-');
       const rows = data.map(row =>
-        keys.map(k => String(row[k] ?? 'null').padEnd(widths[k])).join(' | ')
+        keys.map(k => String(row[k] ?? 'null').padEnd(widths[k] || 0)).join(' | ')
       );
 
       return [header, separator, ...rows].join('\n');

@@ -157,7 +157,7 @@ export async function createSSHTunnel(config: SSHTunnelConfig): Promise<SSHTunne
             logger.debug('Local socket error', { error: error.message });
           });
 
-          sshStream.on('error', (error) => {
+          sshStream.on('error', (error: Error) => {
             logger.debug('SSH stream error', { error: error.message });
           });
         }
