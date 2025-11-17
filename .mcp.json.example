@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "bun",
+      "args": ["run", "/absolute/path/to/mcp-database-client/index.ts"],
+      "env": {
+        "POSTGRES_HOST": "localhost",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DATABASE": "mydb",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "your_password_here",
+        "POSTGRES_MAX_CONNECTIONS": "10"
+      }
+    }
+  }
+}
