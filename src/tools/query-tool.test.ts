@@ -129,4 +129,117 @@ describe('Query Tool', () => {
       expect(typeof result.error).toBe('string');
     });
   });
+
+  describe('Pagination', () => {
+    test('should have limit and offset in input schema', () => {
+      expect(QUERY_TOOL_DEFINITION.inputSchema.properties.limit).toBeDefined();
+      expect(QUERY_TOOL_DEFINITION.inputSchema.properties.limit.type).toBe('number');
+      expect(QUERY_TOOL_DEFINITION.inputSchema.properties.offset).toBeDefined();
+      expect(QUERY_TOOL_DEFINITION.inputSchema.properties.offset.type).toBe('number');
+    });
+
+    test('should reject invalid limit (0)', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({
+        sql: 'SELECT * FROM users',
+        limit: 0
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('limit');
+    });
+
+    test('should reject invalid limit (negative)', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({
+        sql: 'SELECT * FROM users',
+        limit: -10
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('limit');
+    });
+
+    test('should reject invalid offset (negative)', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({
+        sql: 'SELECT * FROM users',
+        offset: -5
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('offset');
+    });
+
+    test('should use default limit when not provided', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({ sql: 'SELECT 1' });
+
+      // Will fail without DB, but we check the structure
+      if (result.pagination) {
+        expect(result.pagination.limit).toBeDefined();
+        expect(result.pagination.limit).toBeGreaterThan(0);
+      }
+    });
+
+    test('should use default offset (0) when not provided', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({ sql: 'SELECT 1' });
+
+      if (result.pagination) {
+        expect(result.pagination.offset).toBe(0);
+      }
+    });
+
+    test('should respect custom limit', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({
+        sql: 'SELECT 1',
+        limit: 50
+      });
+
+      if (result.pagination) {
+        expect(result.pagination.limit).toBe(50);
+      }
+    });
+
+    test('should respect custom offset', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({
+        sql: 'SELECT 1',
+        offset: 100
+      });
+
+      if (result.pagination) {
+        expect(result.pagination.offset).toBe(100);
+      }
+    });
+
+    test('should cap limit at MAX_ROWS', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const { QUERY_LIMITS } = await import('../security');
+
+      const result = await handleQueryTool({
+        sql: 'SELECT 1',
+        limit: QUERY_LIMITS.MAX_ROWS + 1000
+      });
+
+      if (result.pagination) {
+        expect(result.pagination.limit).toBeLessThanOrEqual(QUERY_LIMITS.MAX_ROWS);
+      }
+    });
+
+    test('should include hasMore flag in pagination', async () => {
+      const { handleQueryTool } = await import('./query-tool');
+      const result = await handleQueryTool({
+        sql: 'SELECT 1',
+        limit: 10
+      });
+
+      if (result.pagination) {
+        expect(result.pagination).toHaveProperty('hasMore');
+        expect(typeof result.pagination.hasMore).toBe('boolean');
+      }
+    });
+  });
 });

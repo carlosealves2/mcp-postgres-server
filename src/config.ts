@@ -10,6 +10,7 @@ export interface DatabaseConfig {
   username: string;
   password: string;
   maxConnections: number;
+  insecure: boolean;
 }
 
 /**
@@ -42,6 +43,7 @@ export function loadDatabaseConfig(): DatabaseConfig {
     username: process.env.POSTGRES_USER!,
     password: process.env.POSTGRES_PASSWORD!,
     maxConnections: parseInt(process.env.POSTGRES_MAX_CONNECTIONS || '10', 10),
+    insecure: process.env.POSTGRES_INSECURE === 'true',
   };
 
   // Validate port number

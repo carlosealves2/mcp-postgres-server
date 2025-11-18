@@ -12,6 +12,7 @@ import { initializeSSHTunnelIfNeeded, type SSHTunnel } from './ssh-tunnel';
 let connectionPool: ReturnType<typeof postgres> | null = null;
 let isInitialized = false;
 let sshTunnel: SSHTunnel | null = null;
+let insecureMode = false;
 
 /**
  * Initializes the database connection pool
@@ -29,6 +30,9 @@ export async function initializeDatabase(): Promise<void> {
 
     const config = loadDatabaseConfig();
 
+    // Store insecure mode flag
+    insecureMode = config.insecure;
+
     // If SSH tunnel is active, connect through it
     const dbHost = sshTunnel ? '127.0.0.1' : config.host;
     const dbPort = sshTunnel ? sshTunnel.localPort : config.port;
@@ -39,7 +43,13 @@ export async function initializeDatabase(): Promise<void> {
       database: config.database,
       maxConnections: config.maxConnections,
       viaSSHTunnel: !!sshTunnel,
+      insecure: insecureMode,
     });
+
+    if (insecureMode) {
+      logger.warn('⚠️  INSECURE MODE ENABLED: Write operations (INSERT, UPDATE, DELETE, etc.) are allowed');
+      console.error('⚠️  WARNING: INSECURE MODE ENABLED - Write operations are allowed');
+    }
 
     // Initialize postgres with connection config
     connectionPool = postgres({
@@ -222,4 +232,12 @@ export async function closeDatabase(): Promise<void> {
  */
 export function isDatabaseReady(): boolean {
   return isInitialized && connectionPool !== null;
+}
+
+/**
+ * Checks if insecure mode is enabled
+ * @returns true if insecure mode is enabled (write operations allowed)
+ */
+export function isInsecureMode(): boolean {
+  return insecureMode;
 }

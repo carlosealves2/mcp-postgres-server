@@ -49,9 +49,10 @@ export function normalizeQuery(sql: string): string {
 /**
  * Validates if a SQL query is read-only (SELECT only)
  * @param sql - The SQL query to validate
+ * @param insecure - If true, allows write operations (INSERT, UPDATE, DELETE, etc.). Default: false
  * @returns Validation result with error message if invalid
  */
-export function validateReadOnlyQuery(sql: string): ValidationResult {
+export function validateReadOnlyQuery(sql: string, insecure: boolean = false): ValidationResult {
   if (!sql || typeof sql !== 'string') {
     logger.security('Query validation failed: invalid input type', {
       inputType: typeof sql,
@@ -71,6 +72,14 @@ export function validateReadOnlyQuery(sql: string): ValidationResult {
       isValid: false,
       error: 'SQL query cannot be empty'
     };
+  }
+
+  // If insecure mode is enabled, skip read-only validation
+  if (insecure) {
+    logger.warn('INSECURE MODE: Query validation bypassed - write operations allowed', {
+      queryPreview: normalizedSql.substring(0, 100),
+    });
+    return { isValid: true };
   }
 
   // Check if query starts with SELECT or WITH (on normalized query)
@@ -155,9 +164,10 @@ export function validateQueryLength(sql: string): ValidationResult {
 /**
  * Performs all security validations on a SQL query
  * @param sql - The SQL query to validate
+ * @param insecure - If true, allows write operations (INSERT, UPDATE, DELETE, etc.). Default: false
  * @returns Validation result with error message if invalid
  */
-export function validateQuery(sql: string): ValidationResult {
+export function validateQuery(sql: string, insecure: boolean = false): ValidationResult {
   // Validate length
   const lengthResult = validateQueryLength(sql);
   if (!lengthResult.isValid) {
@@ -165,7 +175,7 @@ export function validateQuery(sql: string): ValidationResult {
   }
 
   // Validate read-only
-  const readOnlyResult = validateReadOnlyQuery(sql);
+  const readOnlyResult = validateReadOnlyQuery(sql, insecure);
   if (!readOnlyResult.isValid) {
     return readOnlyResult;
   }
