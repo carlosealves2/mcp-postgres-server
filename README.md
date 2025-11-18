@@ -71,20 +71,44 @@ SSH_PRIVATE_KEY_PATH=/home/user/.ssh/id_rsa
 
 ### Configuração MCP Client
 
-Adicione ao seu cliente MCP (ex: Claude Desktop):
+Adicione ao seu cliente MCP (ex: Claude Desktop, Claude Code):
+
+**Opção 1: Usando pacote npm publicado (Recomendado)**
+
+```json
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "bunx",
+      "args": ["@carlos.e.alves3/mcp-postgres-server"],
+      "env": {
+        "POSTGRES_HOST": "localhost",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DATABASE": "mydb",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "sua_senha",
+        "POSTGRES_INSECURE": "false"
+      }
+    }
+  }
+}
+```
+
+**Opção 2: Usando repositório local (Desenvolvimento)**
 
 ```json
 {
   "mcpServers": {
     "postgres": {
       "command": "bun",
-      "args": ["run", "/caminho/para/mcp-database-client/index.ts"],
+      "args": ["run", "/caminho/absoluto/para/mcp-database-client/index.ts"],
       "env": {
         "POSTGRES_HOST": "localhost",
         "POSTGRES_PORT": "5432",
         "POSTGRES_DATABASE": "mydb",
         "POSTGRES_USER": "postgres",
-        "POSTGRES_PASSWORD": "sua_senha"
+        "POSTGRES_PASSWORD": "sua_senha",
+        "POSTGRES_INSECURE": "false"
       }
     }
   }
