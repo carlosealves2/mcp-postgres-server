@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.2.0...v1.2.1) (2025-11-18)
+
+
+### Bug Fixes
+
+* correct npm scope to match npm username ([cabdc29](https://github.com/carlosealves2/mcp-postgres-server/commit/cabdc29e222eea7de0be420f31933c7f209512ba))
+
 ## [1.2.0](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.1.0...v1.2.0) (2025-11-18)
 
 
