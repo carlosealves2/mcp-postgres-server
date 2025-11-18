@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.1.0...v1.2.0) (2025-11-18)
+
+
+### Features
+
+* add pagination and insecure mode support ([52e1933](https://github.com/carlosealves2/mcp-postgres-server/commit/52e19336f44a6e5d3dc5999b3baa9eb6e7ae5895))
+
 ## [1.1.0](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.0.0...v1.1.0) (2025-11-17)
 
 
