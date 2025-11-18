@@ -247,7 +247,8 @@ describe('getConnectionUrl', () => {
       database: 'testdb',
       username: 'user',
       password: 'pass',
-      maxConnections: 10
+      maxConnections: 10,
+      insecure: false
     };
 
     const url = getConnectionUrl(config);
@@ -262,7 +263,8 @@ describe('getConnectionUrl', () => {
       database: 'testdb',
       username: 'user',
       password: 'p@ss:word/123',
-      maxConnections: 10
+      maxConnections: 10,
+      insecure: false
     };
 
     const url = getConnectionUrl(config);
@@ -277,7 +279,8 @@ describe('getConnectionUrl', () => {
       database: 'testdb',
       username: 'user',
       password: 'pass',
-      maxConnections: 10
+      maxConnections: 10,
+      insecure: false
     };
 
     const url = getConnectionUrl(config);
@@ -292,7 +295,8 @@ describe('getConnectionUrl', () => {
       database: 'testdb',
       username: 'user',
       password: 'pass',
-      maxConnections: 10
+      maxConnections: 10,
+      insecure: false
     };
 
     const url = getConnectionUrl(config);
@@ -307,7 +311,8 @@ describe('getConnectionUrl', () => {
       database: 'my_test_database',
       username: 'user',
       password: 'pass',
-      maxConnections: 10
+      maxConnections: 10,
+      insecure: false
     };
 
     const url = getConnectionUrl(config);
@@ -322,7 +327,8 @@ describe('getConnectionUrl', () => {
       database: 'testdb',
       username: 'user123',
       password: 'pass',
-      maxConnections: 10
+      maxConnections: 10,
+      insecure: false
     };
 
     const url = getConnectionUrl(config);

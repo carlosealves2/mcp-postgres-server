@@ -197,6 +197,7 @@ describe('Config module', () => {
         username: 'testuser',
         password: 'testpass',
         maxConnections: 10,
+        insecure: false,
       };
 
       const url = getConnectionUrl(config);
@@ -213,6 +214,7 @@ describe('Config module', () => {
         username: 'testuser',
         password: 'p@ss:word!',
         maxConnections: 10,
+        insecure: false,
       };
 
       const url = getConnectionUrl(config);

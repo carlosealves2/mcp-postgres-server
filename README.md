@@ -4,12 +4,14 @@ Servidor MCP (Model Context Protocol) para acesso somente-leitura a bancos de da
 
 ## Funcionalidades
 
-- **Acesso Somente-Leitura**: Apenas queries SELECT são permitidas
+- **Acesso Somente-Leitura**: Apenas queries SELECT são permitidas (modo seguro padrão)
+- **Modo Inseguro (Opcional)**: Permite operações de escrita (INSERT, UPDATE, DELETE) para desenvolvimento
+- **Paginação**: Suporte a limit e offset para consultas grandes
 - **Validação de Segurança**: Prevenção de SQL injection, limites de tamanho e timeout
 - **Múltiplos Formatos**: Saída em TEXT, JSON, YAML ou TOON (otimizado para LLMs)
 - **Suporte SSH Tunnel**: Conexão segura via bastion/jump host
 - **Ferramentas MCP**:
-  - `query` - Executar queries SELECT customizadas
+  - `query` - Executar queries SQL (SELECT ou CRUD se insecure=true)
   - `list_tables` - Listar tabelas de um schema
   - `describe_table` - Detalhar estrutura de tabela (colunas, índices, foreign keys)
 
@@ -43,6 +45,10 @@ POSTGRES_DATABASE=mydb
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=sua_senha
 POSTGRES_MAX_CONNECTIONS=10
+
+# Modo inseguro - permite operações de escrita (default: false)
+# ⚠️ ATENÇÃO: Use apenas em ambientes de desenvolvimento/teste
+POSTGRES_INSECURE=false
 ```
 
 **Conexão via SSH Tunnel:**
@@ -103,11 +109,26 @@ bun run build
 
 ### Ferramentas Disponíveis
 
-**query** - Executar SELECT:
+**query** - Executar SQL com paginação:
 ```json
 {
-  "sql": "SELECT * FROM users WHERE age > 18 LIMIT 10",
+  "sql": "SELECT * FROM users WHERE age > 18",
+  "limit": 50,
+  "offset": 100,
   "format": "JSON"
+}
+```
+
+Resposta inclui metadados de paginação:
+```json
+{
+  "data": [...],
+  "rowCount": 50,
+  "pagination": {
+    "limit": 50,
+    "offset": 100,
+    "hasMore": true
+  }
 }
 ```
 
@@ -139,15 +160,37 @@ bun run build
 
 ### Validações Implementadas
 
-1. **Query Read-Only**: Apenas SELECT e WITH (CTEs) permitidos
+1. **Query Read-Only** (padrão): Apenas SELECT e WITH (CTEs) permitidos
 2. **Keywords Bloqueadas**: INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE, GRANT, REVOKE, EXEC, EXECUTE, CALL, COPY, IMPORT
 3. **Padrões Bloqueados**: INTO OUTFILE, LOAD DATA
 4. **Normalização**: Remove comentários SQL para evitar bypass
 5. **Limites**:
    - Tamanho máximo: 10.000 caracteres
-   - Máximo de linhas retornadas: 1.000
+   - Máximo de linhas retornadas: 1.000 (ajustável via paginação)
    - Timeout: 30 segundos
 6. **Queries Parametrizadas**: Para list_tables e describe_table
+
+### Modo Inseguro (Desenvolvimento)
+
+⚠️ **ATENÇÃO**: Use apenas em ambientes de desenvolvimento/teste!
+
+Quando `POSTGRES_INSECURE=true`, todas as operações SQL são permitidas:
+
+```env
+POSTGRES_INSECURE=true
+```
+
+Isso habilita:
+- INSERT, UPDATE, DELETE
+- CREATE, ALTER, DROP
+- TRUNCATE, GRANT, REVOKE
+- Todas as operações DDL e DML
+
+**Avisos de segurança:**
+```
+⚠️  WARNING: INSECURE MODE ENABLED - Write operations are allowed
+[WARN] INSECURE MODE: Query validation bypassed - write operations allowed
+```
 
 ### Logging de Segurança
 
@@ -175,13 +218,13 @@ bun test src/security.test.ts
 
 ### Cobertura de Testes
 
-| Módulo | Funções | Linhas |
-|--------|---------|--------|
-| security.ts | 100% | 100% |
-| config.ts | 100% | 100% |
-| query-tool.ts | 100% | 100% |
-| formatter.ts | 88.89% | 93.65% |
-| list-tables-tool.ts | 66.67% | 92.31% |
+| Módulo              | Funções  | Linhas |
+|---------------------|----------|--------|
+| security.ts         | 100%     | 100%   |
+| config.ts           | 100%     | 100%   |
+| query-tool.ts       | 100%     | 100%   |
+| formatter.ts        | 88.89%   | 93.65% |
+| list-tables-tool.ts | 66.67%   | 92.31% |
 
 ## Estrutura do Projeto
 
