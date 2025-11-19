@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.2.2...v1.3.0) (2025-11-19)
+
+
+### Features
+
+* add version command and --version CLI flag ([7e23ff9](https://github.com/carlosealves2/mcp-postgres-server/commit/7e23ff97763f36899cbd32d730f5dbda55282fa4))
+
 ## [1.2.2](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.2.1...v1.2.2) (2025-11-19)
 
 
