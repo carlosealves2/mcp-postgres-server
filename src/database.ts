@@ -13,9 +13,16 @@ let connectionPool: ReturnType<typeof postgres> | null = null;
 let isInitialized = false;
 let sshTunnel: SSHTunnel | null = null;
 let insecureMode = false;
-let initPromise: Promise<void> | null = null;
+let initStarted = false;
 let initResolve: (() => void) | null = null;
 let initReject: ((error: Error) => void) | null = null;
+
+// Create initialization promise immediately so waitForDatabase() can await it
+// even if called before initializeDatabase() starts
+const initPromise = new Promise<void>((resolve, reject) => {
+  initResolve = resolve;
+  initReject = reject;
+});
 
 /**
  * Initializes the database connection pool
@@ -27,13 +34,7 @@ export async function initializeDatabase(): Promise<void> {
     return;
   }
 
-  // Create the promise for waitForDatabase() to await
-  if (!initPromise) {
-    initPromise = new Promise<void>((resolve, reject) => {
-      initResolve = resolve;
-      initReject = reject;
-    });
-  }
+  initStarted = true;
 
   try {
     // Initialize SSH tunnel if configured
@@ -148,8 +149,8 @@ export async function waitForDatabase(timeoutMs: number = 10000): Promise<Return
     return connectionPool;
   }
 
-  // If no initialization promise exists, database initialization was never started
-  if (!initPromise) {
+  // If initialization hasn't started yet, fail fast
+  if (!initStarted) {
     throw new Error('Database initialization not started. Call initializeDatabase() first');
   }
 
