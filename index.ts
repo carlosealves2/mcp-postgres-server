@@ -9,6 +9,13 @@
  * Configuration: Set connection details in .mcp.json env section
  */
 
+// Handle --version flag
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+  const packageJson = require('./package.json');
+  console.log(`${packageJson.name} v${packageJson.version}`);
+  process.exit(0);
+}
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -34,6 +41,11 @@ import {
   handleDescribeTableTool,
   type DescribeTableToolInput
 } from './src/tools/describe-table-tool';
+import {
+  VERSION_TOOL_DEFINITION,
+  handleVersionTool,
+  type VersionToolInput
+} from './src/tools/version-tool';
 import { formatOutput, type OutputFormat } from './src/formatter';
 
 // Create MCP server instance
@@ -58,6 +70,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       QUERY_TOOL_DEFINITION,
       LIST_TABLES_TOOL_DEFINITION,
       DESCRIBE_TABLE_TOOL_DEFINITION,
+      VERSION_TOOL_DEFINITION,
     ],
   };
 });
@@ -131,6 +144,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           columns: result.columns,
           indexes: result.indexes,
           foreignKeys: result.foreignKeys
+        };
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: formatOutput(outputData, input.format || 'TOON')
+            }
+          ]
+        };
+      }
+
+      case 'version': {
+        const input = args as VersionToolInput;
+        const result = await handleVersionTool(input);
+
+        if (!result.success) {
+          throw new McpError(ErrorCode.InternalError, result.error || 'Failed to get version');
+        }
+
+        const outputData = {
+          name: result.name,
+          version: result.version,
+          description: result.description
         };
 
         return {
