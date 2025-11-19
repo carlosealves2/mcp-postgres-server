@@ -2,7 +2,7 @@
  * List Tables Tool - List all tables in the database
  */
 
-import { getDatabase } from '../database';
+import { waitForDatabase } from '../database';
 import { QUERY_LIMITS } from '../security';
 import { FORMAT_SCHEMA, type OutputFormat } from '../formatter';
 
@@ -47,7 +47,8 @@ export interface ListTablesToolResult {
 export async function handleListTablesTool(input: ListTablesToolInput = {}): Promise<ListTablesToolResult> {
   try {
     const schema = input.schema || 'public';
-    const db = getDatabase();
+    // Wait for database initialization (handles race condition with MCP client)
+    const db = await waitForDatabase();
 
     // Create a timeout promise
     const timeoutPromise = new Promise((_, reject) => {

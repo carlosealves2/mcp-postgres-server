@@ -2,7 +2,7 @@
  * Describe Table Tool - Get detailed schema information for a table
  */
 
-import { getDatabase } from '../database';
+import { waitForDatabase } from '../database';
 import { QUERY_LIMITS } from '../security';
 import { FORMAT_SCHEMA, type OutputFormat } from '../formatter';
 
@@ -83,7 +83,8 @@ export async function handleDescribeTableTool(input: DescribeTableToolInput): Pr
 
     const schema = input.schema || 'public';
     const tableName = input.table;
-    const db = getDatabase();
+    // Wait for database initialization (handles race condition with MCP client)
+    const db = await waitForDatabase();
 
     // Create a timeout promise
     const timeoutPromise = new Promise((_, reject) => {
