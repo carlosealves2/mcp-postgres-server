@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.2.1...v1.2.2) (2025-11-19)
+
+
+### Bug Fixes
+
+* resolve race condition in database initialization ([a38a480](https://github.com/carlosealves2/mcp-postgres-server/commit/a38a4806dabb40838be15027c37e0501a4396277))
+
 ## [1.2.1](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.2.0...v1.2.1) (2025-11-18)
 
 
