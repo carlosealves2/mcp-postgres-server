@@ -25,14 +25,14 @@ describe('Database executeQuery with mocks', () => {
     const database = await import('./database');
 
     // Without initialization, executeQuery should fail
-    await expect(database.executeQuery('SELECT 1')).rejects.toThrow('Database not initialized');
+    await expect(database.executeQuery('SELECT 1')).rejects.toThrow('Database initialization not started');
   });
 
   test('executeParameterizedQuery requires initialization', async () => {
     const database = await import('./database');
 
     const strings = ['SELECT * FROM users WHERE id = ', ''] as unknown as TemplateStringsArray;
-    await expect(database.executeParameterizedQuery(strings, 1)).rejects.toThrow('Database not initialized');
+    await expect(database.executeParameterizedQuery(strings, 1)).rejects.toThrow('Database initialization not started');
   });
 
   test('closeDatabase handles non-initialized state', async () => {

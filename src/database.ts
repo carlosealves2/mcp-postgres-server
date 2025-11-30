@@ -187,7 +187,7 @@ export async function waitForDatabase(timeoutMs: number = 10000): Promise<Return
  * @throws Error if query fails or times out
  */
 export async function executeQuery(query: string): Promise<any[]> {
-  const db = getDatabase();
+  const db = await waitForDatabase();
   const startTime = Date.now();
 
   // Create a timeout promise
@@ -248,7 +248,7 @@ export async function executeQuery(query: string): Promise<any[]> {
  * @throws Error if query fails or times out
  */
 export async function executeParameterizedQuery(strings: TemplateStringsArray, ...values: any[]): Promise<any[]> {
-  const db = getDatabase();
+  const db = await waitForDatabase();
 
   // Create a timeout promise
   const timeoutPromise = new Promise((_, reject) => {
