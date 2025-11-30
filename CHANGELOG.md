@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.3.0...v1.3.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* replace getDatabase() with waitForDatabase() in query functions ([10ebade](https://github.com/carlosealves2/mcp-postgres-server/commit/10ebade262050658e6d38adced16713a4eaddb6e))
+
 ## [1.3.0](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.2.2...v1.3.0) (2025-11-19)
 
 
