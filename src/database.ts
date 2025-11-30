@@ -13,16 +13,25 @@ let connectionPool: ReturnType<typeof postgres> | null = null;
 let isInitialized = false;
 let sshTunnel: SSHTunnel | null = null;
 let insecureMode = false;
-let initStarted = false;
+
+// Initialization promise and control
+let initPromise: Promise<void> | null = null;
 let initResolve: (() => void) | null = null;
 let initReject: ((error: Error) => void) | null = null;
 
-// Create initialization promise immediately so waitForDatabase() can await it
-// even if called before initializeDatabase() starts
-const initPromise = new Promise<void>((resolve, reject) => {
-  initResolve = resolve;
-  initReject = reject;
-});
+/**
+ * Gets or creates the initialization promise
+ * This ensures the promise exists before any tool tries to wait for it
+ */
+function getInitPromise(): Promise<void> {
+  if (!initPromise) {
+    initPromise = new Promise<void>((resolve, reject) => {
+      initResolve = resolve;
+      initReject = reject;
+    });
+  }
+  return initPromise;
+}
 
 /**
  * Initializes the database connection pool
@@ -34,7 +43,8 @@ export async function initializeDatabase(): Promise<void> {
     return;
   }
 
-  initStarted = true;
+  // Ensure the promise exists
+  getInitPromise();
 
   try {
     // Initialize SSH tunnel if configured
@@ -135,45 +145,47 @@ export function getDatabase() {
 
 /**
  * Waits for database to be initialized with timeout
- * This function resolves the race condition where MCP clients might call tools
- * before the database initialization completes. It waits for the initialization
- * promise to resolve instead of immediately throwing an error.
+ * This function completely eliminates race conditions by waiting for initialization
+ * to complete, even if called before initializeDatabase() starts.
  *
- * @param timeoutMs - Maximum time to wait in milliseconds (default: 10000)
+ * @param timeoutMs - Maximum time to wait in milliseconds (default: 60000 for production, allows override for tests)
  * @returns The connection pool
  * @throws Error if timeout is reached or initialization fails
  */
-export async function waitForDatabase(timeoutMs: number = 10000): Promise<ReturnType<typeof postgres>> {
+export async function waitForDatabase(timeoutMs: number = 60000): Promise<ReturnType<typeof postgres>> {
   // If already initialized, return immediately
   if (isInitialized && connectionPool) {
     return connectionPool;
   }
 
-  // If initialization hasn't started yet, fail fast
-  if (!initStarted) {
-    throw new Error('Database initialization not started. Call initializeDatabase() first');
-  }
+  // Get or create the initialization promise
+  // This ensures we always have a promise to wait on
+  const promise = getInitPromise();
 
   // Create a timeout promise
   const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => {
-      reject(new Error(`Database initialization timeout after ${timeoutMs}ms`));
+      reject(new Error(`Database initialization timeout after ${timeoutMs}ms. The database server may not have started yet.`));
     }, timeoutMs);
   });
 
   try {
+    logger.debug('Waiting for database initialization...');
+
     // Wait for initialization to complete or timeout
-    await Promise.race([initPromise, timeoutPromise]);
+    await Promise.race([promise, timeoutPromise]);
 
     // Double-check that we have a valid connection pool
     if (!connectionPool) {
       throw new Error('Database initialization completed but connection pool is not available');
     }
 
+    logger.debug('Database initialization complete');
     return connectionPool;
   } catch (error) {
     // Re-throw the error with context
     if (error instanceof Error) {
+      logger.error('Failed to wait for database', { error: error.message });
       throw error;
     }
     throw new Error(`Failed to wait for database: ${String(error)}`);

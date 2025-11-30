@@ -1,6 +1,6 @@
 {
   "name": "@carlos.e.alves3/mcp-postgres-server",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "MCP server for read-only PostgreSQL database access",
   "author": "carlos.e.alves2@proton.me",
   "license": "MIT",

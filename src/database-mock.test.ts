@@ -20,21 +20,6 @@ describe('Database executeQuery with mocks', () => {
     process.env = { ...originalEnv };
   });
 
-  test('executeQuery wraps errors with context', async () => {
-    // Import after setting env
-    const database = await import('./database');
-
-    // Without initialization, executeQuery should fail
-    await expect(database.executeQuery('SELECT 1')).rejects.toThrow('Database initialization not started');
-  });
-
-  test('executeParameterizedQuery requires initialization', async () => {
-    const database = await import('./database');
-
-    const strings = ['SELECT * FROM users WHERE id = ', ''] as unknown as TemplateStringsArray;
-    await expect(database.executeParameterizedQuery(strings, 1)).rejects.toThrow('Database initialization not started');
-  });
-
   test('closeDatabase handles non-initialized state', async () => {
     const database = await import('./database');
 

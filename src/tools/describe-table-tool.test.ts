@@ -5,6 +5,9 @@
 import { test, expect, describe } from 'bun:test';
 import { DESCRIBE_TABLE_TOOL_DEFINITION } from './describe-table-tool';
 
+// Skip integration tests in CI where there's no database
+const skipIntegrationTests = process.env.CI === 'true';
+
 describe('Describe Table Tool', () => {
   describe('Tool definition', () => {
     test('should have correct name', () => {
@@ -57,7 +60,7 @@ describe('Describe Table Tool', () => {
       expect(result.error).toContain('must be a string');
     });
 
-    test('should use default schema when not provided', async () => {
+    test.skipIf(skipIntegrationTests)('should use default schema when not provided', async () => {
       const { handleDescribeTableTool } = await import('./describe-table-tool');
       const result = await handleDescribeTableTool({ table: 'users' });
 
@@ -67,7 +70,7 @@ describe('Describe Table Tool', () => {
   });
 
   describe('SQL Injection prevention', () => {
-    test('should handle table name with single quotes', async () => {
+    test.skipIf(skipIntegrationTests)('should handle table name with single quotes', async () => {
       const { handleDescribeTableTool } = await import('./describe-table-tool');
       const result = await handleDescribeTableTool({
         table: "users'; DROP TABLE users; --",
@@ -77,7 +80,7 @@ describe('Describe Table Tool', () => {
       expect(result).toHaveProperty('success');
     });
 
-    test('should handle schema with single quotes', async () => {
+    test.skipIf(skipIntegrationTests)('should handle schema with single quotes', async () => {
       const { handleDescribeTableTool } = await import('./describe-table-tool');
       const result = await handleDescribeTableTool({
         table: 'users',
@@ -87,7 +90,7 @@ describe('Describe Table Tool', () => {
       expect(result).toHaveProperty('success');
     });
 
-    test('should handle table name with special characters', async () => {
+    test.skipIf(skipIntegrationTests)('should handle table name with special characters', async () => {
       const { handleDescribeTableTool } = await import('./describe-table-tool');
       const result = await handleDescribeTableTool({
         table: "test'table",
@@ -96,7 +99,7 @@ describe('Describe Table Tool', () => {
       expect(result).toHaveProperty('success');
     });
 
-    test('should handle backslashes in table name', async () => {
+    test.skipIf(skipIntegrationTests)('should handle backslashes in table name', async () => {
       const { handleDescribeTableTool } = await import('./describe-table-tool');
       const result = await handleDescribeTableTool({
         table: "test\\table",
@@ -107,7 +110,7 @@ describe('Describe Table Tool', () => {
   });
 
   describe('Result structure', () => {
-    test('should return success flag', async () => {
+    test.skipIf(skipIntegrationTests)('should return success flag', async () => {
       const { handleDescribeTableTool } = await import('./describe-table-tool');
       const result = await handleDescribeTableTool({ table: 'users' });
 
@@ -115,7 +118,7 @@ describe('Describe Table Tool', () => {
       expect(typeof result.success).toBe('boolean');
     });
 
-    test('should include error message on failure', async () => {
+    test.skipIf(skipIntegrationTests)('should include error message on failure', async () => {
       const { handleDescribeTableTool } = await import('./describe-table-tool');
       const result = await handleDescribeTableTool({ table: 'nonexistent' });
 
