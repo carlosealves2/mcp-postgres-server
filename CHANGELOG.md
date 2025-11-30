@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.3.1...v1.4.0) (2025-11-30)
+
+
+### Features
+
+* enhance database initialization and waiting logic ([ab0d6ef](https://github.com/carlosealves2/mcp-postgres-server/commit/ab0d6ef6751bdef30d911a41865dd64675f32521))
+
 ## [1.3.1](https://github.com/carlosealves2/mcp-postgres-server/compare/v1.3.0...v1.3.1) (2025-11-30)
 
 
